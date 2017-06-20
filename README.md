@@ -57,7 +57,7 @@ Install CentOS 7.2 box
 > # todo: add more config statements
 
 > # create vagrant box
-> vagrant package --output "php-dev-vm-5.6.30.box" {vm_id} && mv php-dev-vm-5.6.30.box ../../box/
+> vagrant package --output "php-dev-vm-5.6.30.box" $(vagrant global-status | grep 'src/PHP-5.6.30' | awk '{print $1}') && mv php-dev-vm-5.6.30.box ../../box/
 ```
 
 ### 构建`php-dev-vm-7.1.5.box`
@@ -70,7 +70,8 @@ Install CentOS 7.2 box
 ```sh
 # 首先，构建 php-dev-vm-5.6.30.box
 
-# 把 Symfony Application 的项目文件放在和 `php-dev-vm` 的平级目录 `symfony_prj1` 中
+# 通过 Symfony installer 创建 Symfony 的demo项目，把 demo 的项目文件放在和 `php-dev-vm` 的平级目录 `symfony_demo` 中
+> symfony demo symfony_demo
 
 > cd work/php56-symfony
 > vagrant box remove "../../box/php-dev-vm-5.6.30.box" || true && vagrant up  # ignore error when box not exists
@@ -82,6 +83,27 @@ Install CentOS 7.2 box
 > # 浏览器中访问 http://symfony.phpvm.me http://host.phpvm.me/php-info.php ，能正常打开页面
 ```
 
+配置PHPStorm调试：
+
+- 修改`xdebug`的监听端口为`9999`
+  ![](assets/README-4a09b.png)
+- 添加`server`配置
+  ![](assets/README-37991.png)
+- 启动调试有两中方法
+  - 方法1
+    - 打开`Run/Debug Configurations`，添加`PHP Web Application`
+      ![](assets/README-19551.png)
+    - 以`Debug`方式运行`symfony.phpvm.me`
+      ![](assets/README-673e3.png)
+  - 方法2
+    - 安装Chrome插件`xdebug helper`、`JetBrains IDE Support`
+    - PHPStorm中，设置断点，点击`Start Listening for PHP Debug Connetions`
+    ![](assets/README-19671.png)
+    - 浏览器中打开`http://symfony.phpvm.me`，`xdebug helper`打开`debug`
+    ![](assets/README-b6687.png)
+    - PHPStorm进入调试模式
+    ![](assets/README-f879b.png)
+
 # References
 
 - Vagrant: https://www.vagrantup.com/docs/index.html
@@ -90,10 +112,11 @@ Install CentOS 7.2 box
   - http://www.vagrantbox.es/
 - Nginx配置
   - [Nginx Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html)
-  - https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/
-  - https://segmentfault.com/a/1190000003067656
+  - [Setting up PHP-FastCGI and nginx? Don’t trust the tutorials: check your configuration!](https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/)
+  - [nginx和php-fpm基础环境的安装和配置](https://segmentfault.com/a/1190000003067656)
 - PHP-FPM配置
   - FastCGI 进程管理器（FPM）配置：http://php.net/manual/zh/install.fpm.configuration.php
   - https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/
 - PHP Function Reference／扩展列表
   - http://php.net/manual/en/funcref.php
+- [Debugging with PhpStorm](https://confluence.jetbrains.com/display/PhpStorm/Debugging+with+PhpStorm)
